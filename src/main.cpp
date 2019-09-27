@@ -1,10 +1,16 @@
 #include <Arduino.h>
 
+//timers
+unsigned long timer1;
+int count1=0;
+byte tick=0;
+
 //valuelast
 int value1last = 0;
 int value2last = 0;
 int value3last = 0;
 int value4last = 0;
+int value5last = 0;
 
 
 //Out
@@ -12,10 +18,10 @@ int out1 = 0;  //tolatasjelzo Kek feny
 int out2 = 1;  //tolatasjelzo Feher feny
 int out3 = 2;  //nembiztositott Zold feny
 int out4 = 3;  //nembiztositott Sarga feny
-int out5 = 4;  //Feher + sarga feny
-int out6 = 5;  //Feher + zold feny
-int out7 = 6;
-int out8 = 7;
+int out5 = 4;  //Nem biztosított fény bejárati jelzők Piros
+int out6 = 5;  //Nem biztosított fény bejárati jelzők Sarga
+int out7 = 6;  //Ismetlojelzo sarga
+int out8 = 7;  //Ismetlojelzo Zold
 int out9 = 8;
 int out10 = 9;
 int out11 = 10;
@@ -42,6 +48,8 @@ int in15 = A11;
 
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Arduino");
   pinMode(out1, OUTPUT);
   pinMode(out2, OUTPUT);
   pinMode(out3, OUTPUT);
@@ -93,44 +101,100 @@ void tolatasjelzo() {
 
 void nbtej(/*Nem biztositott terkoz elojelzo*/) {
   if ((digitalRead(in3) == HIGH) && (value2last == 0)) {
-    digitalWrite(out3, HIGH); //Kek fel
-    digitalWrite(out4, LOW); //Feher le
+    digitalWrite(out3, HIGH); //Zold fel
+    digitalWrite(out4, LOW); //Sarga le
     value2last = 1;
   }
 
   if ((digitalRead(in4) == HIGH ) && (value2last == 1)) {
-      digitalWrite(out3, LOW); //Kek le
-      digitalWrite(out4, HIGH); //Feher fel
+      digitalWrite(out3, LOW); //Zold le
+      digitalWrite(out4, HIGH); //Sarga fel
       value2last = 0;
     }
 }
 
 void nbfbj(/*Nem biztosított fény bejárati jelző*/){
   if ((digitalRead(in5) == HIGH) && (value3last == 0)) {
-    digitalWrite(out3, HIGH); //Kek fel
-    digitalWrite(out4, LOW); //Feher le
+    digitalWrite(out5, HIGH); //Piros fel
+    digitalWrite(out6, LOW); //Sarga le
     value3last = 1;
   }
 
   if ((digitalRead(in6) == HIGH ) && (value3last == 1)) {
-      digitalWrite(out3, LOW); //Kek le
-      digitalWrite(out4, HIGH); //Feher fel
+      digitalWrite(out5, LOW); //Piros le
+      digitalWrite(out6, HIGH); //Sarga fel
       value3last = 0;
     }
 }
 
 void ismetlojelzo(){
   if ((digitalRead(in7) == HIGH) && (value4last == 0)) {
-    digitalWrite(out5, HIGH); //Kek fel
-    digitalWrite(out6, LOW); //Feher le
+    digitalWrite(out7, HIGH); //Sarga fel
+    digitalWrite(out8, LOW); //Zold le
     value4last = 1;
   }
 
   if ((digitalRead(in8) == HIGH ) && (value4last == 1)) {
-      digitalWrite(out5, LOW); //Kek le
-      digitalWrite(out6, HIGH); //Feher fel
+      digitalWrite(out7, LOW); //Sarga le
+      digitalWrite(out8, HIGH); //Zold fel
       value4last = 0;
     }
+}
+
+void atj(/*Automata terkozjelzo*/){
+  if (digitalRead(in9) == HIGH)  {
+    digitalWrite(out9, HIGH); //Sarga fel
+    digitalWrite(out10, LOW); //Zold le
+    digitalWrite(out11, LOW); //Zold le
+    value4last = 1;
+  }
+  if (digitalRead(in10) == HIGH ) {
+    digitalWrite(out9, LOW); //Sarga le
+    digitalWrite(out10, HIGH); //Zold fel
+    digitalWrite(out11, LOW); //Zold le
+      value4last = 2;
+    }
+  if (digitalRead(in11) == HIGH ) {
+    digitalWrite(out9, LOW); //Sarga le
+    digitalWrite(out10, LOW); //Zold fel
+    digitalWrite(out11, HIGH); //Zold le
+ count1++;
+ Serial.println(count1);
+      value4last = 3;
+      }
+
+  if (count1>=400) {
+    Serial.println(tick);
+    switch (tick) {
+      case 1:
+        digitalWrite(out11, HIGH); //Sarga fel
+
+        break;
+      case 0:
+         digitalWrite(out11, LOW); //Sarga le
+         break;
+
+    }
+  }
+ /*if ((digitalRead(in11) == HIGH ) && ((value5last == 1)||(value5last == 2)||(value5last == 3))) {
+         count1++;
+         Serial.println(count1);
+         if (count1 == 1000) {
+           digitalWrite(out9, LOW); //Sarga le
+           digitalWrite(out10, LOW); //Zold fel
+           value4last = 0;
+
+           if (tick==1) {
+             digitalWrite(out11, HIGH);
+           }else {
+             digitalWrite(out11, LOW);
+           }
+         }
+
+
+       }*/
+
+
 }
 
 void loop() {
@@ -138,5 +202,14 @@ void loop() {
   nbtej(/*Nem biztositott terkoz elojelzo*/);
   nbfbj(/*Nem biztosított fény bejárati jelző*/);
   ismetlojelzo();
+  atj(/*Automata terkozjelzo*/);
+
+
+//Timer
+if (((millis()-timer1)>=2000) && ((millis()-timer1)<=2100)) {
+  tick=1;
+}else {
+  tick=0;
+}
 
 }
