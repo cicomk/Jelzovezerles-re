@@ -205,11 +205,11 @@ void loop() {
   atj(/*Automata terkozjelzo*/);
 
 
-//Timer
+/*//Timer
 if (((millis()-timer1)>=2000) && ((millis()-timer1)<=2100)) {
   tick=1;
 }else {
   tick=0;
-}
+}*/
 
 }
