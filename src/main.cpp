@@ -2,9 +2,16 @@
 
 //timers
 unsigned long timer1;
+unsigned long timer2;
 int count1=0;
 byte tick=0;//lomg
 byte stick=0;//sort
+//waiting
+unsigned long tolatas = 0;
+unsigned long nembiztterkoz = 0;
+unsigned long nembiztfeny = 0;
+unsigned long ismjel = 0;
+unsigned long gurito = 0;
 
 //valuelast
 int value1last = 0;
@@ -84,55 +91,59 @@ void setup() {
 
 
 
-void tolatasjelzo() {
 
+void tolatasjelzo() {
+if ((millis()-tolatas)>5000){
   if (digitalRead(in2) == HIGH ) {
       digitalWrite(out1, LOW); //Kek le
       digitalWrite(out2, HIGH); //Feher fel
-      value1last = 0;
+      tolatas = millis();
     } else {
       digitalWrite(out1, HIGH); //Kek fel
       digitalWrite(out2, LOW); //Feher le
     }
-
+}
 }
 
 void nbtej(/*Nem biztositott terkoz elojelzo*/) {
 
-
+if ((millis()-nembiztterkoz)>5000){
   if (digitalRead(in4) == HIGH ) {
       digitalWrite(out3, LOW); //Zold le
       digitalWrite(out4, HIGH); //Sarga fel
-      value2last = 0;
+      nembiztterkoz = millis();
     } else {
       digitalWrite(out3, HIGH); //Zold fel
       digitalWrite(out4, LOW); //Sarga le
     }
+  }
 }
 
 void nbfbj(/*Nem biztosított fény bejárati jelző*/){
 
-
+if ((millis()-nembiztfeny)>5000){
   if (digitalRead(in6) == HIGH ) {
       digitalWrite(out5, LOW); //Piros le
       digitalWrite(out6, HIGH); //Sarga fel
-
+nembiztfeny = millis();
     } else {
       digitalWrite(out5, HIGH); //Piros fel
       digitalWrite(out6, LOW); //Sarga le
     }
+  }
 }
 
 void ismetlojelzo(){
+if ((millis()-ismjel)>5000){
   if (digitalRead(in7) == HIGH)  {
     digitalWrite(out7, HIGH); //Sarga fel
     digitalWrite(out8, LOW); //Zold le
-
+ismjel = millis();
   } else {
     digitalWrite(out7, LOW); //Sarga le
     digitalWrite(out8, HIGH); //Zold fel
   }
-
+}
 
 }
 
@@ -193,9 +204,11 @@ void atj(/*Automata terkozjelzo*/){
 }
 
 void guritojelzo(/*Automata terkozjelzo*/){
+if ((millis()-gurito)>5000){
   if (digitalRead(in12) == HIGH ) { //Gurits
       digitalWrite(out12, LOW); //kek le
       digitalWrite(out13, HIGH); //feher fel
+      gurito = millis();
 } else if (digitalRead(in13) == HIGH ) { //Gyorsits
  switch (tick) {
    case 1:
@@ -204,6 +217,7 @@ void guritojelzo(/*Automata terkozjelzo*/){
    case 0:
    digitalWrite(out13, LOW);
    break;
+   gurito = millis();
  }
 } else if (digitalRead(in14) == HIGH ) { //Lassits
   switch (tick) {
@@ -213,15 +227,17 @@ void guritojelzo(/*Automata terkozjelzo*/){
     case 0:
     digitalWrite(out12, LOW);
     break;
+    gurito = millis();
 }
 } else if (digitalRead(in15) == HIGH ) { //vissza
   digitalWrite(out12, HIGH);
   digitalWrite(out13, HIGH);
+  gurito = millis();
 } else {
   digitalWrite(out12, HIGH);
   digitalWrite(out13, LOW);
 }
-
+}
 }
 
 
@@ -234,12 +250,22 @@ void loop() {
 guritojelzo();
 
 //Timer
-if (((millis()-timer1)>=1000) && ((millis()-timer1)<=1100)) {
+//long
+if (((millis()-timer1)>=500) && ((millis()-timer1)<=600)) {
   tick=1;
 }
-if (((millis()-timer1)>=2000) && ((millis()-timer1)<=2100)) {
+if (((millis()-timer1)>=1000) && ((millis()-timer1)<=1100)) {
   tick=0;
-  timer1 = timer1+millis();
+  timer1 = millis();
+}
+
+//sort
+if (((millis()-timer2)>=250) && ((millis()-timer2)<=350)) {
+  stick=1;
+}
+if (((millis()-timer2)>=500) && ((millis()-timer2)<=600)) {
+  stick=0;
+  timer2 = millis();
 }
 
 }
