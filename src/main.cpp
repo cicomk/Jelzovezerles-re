@@ -3,7 +3,8 @@
 //timers
 unsigned long timer1;
 int count1=0;
-byte tick=0;
+byte tick=0;//lomg
+byte stick=0;//sort
 
 //valuelast
 int value1last = 0;
