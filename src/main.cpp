@@ -26,8 +26,8 @@ int out9 = 8;
 int out10 = 9;
 int out11 = 10;
 int out12 = 11;
-int out13 = 12;
-int out14 = 13;
+int out13 = 12; //Guritojelzo kek
+int out14 = 13; //Guritojelzo feher
 
 //In
 int in1 = A0; //Tolatasjelzo Kek
@@ -65,14 +65,14 @@ void setup() {
   pinMode(out13, OUTPUT);
   pinMode(out14, OUTPUT);
 
-   pinMode(in1, INPUT); //kek fel
-   pinMode(in2, INPUT);
-   pinMode(in3, INPUT);
-   pinMode(in4, INPUT);
-   pinMode(in5, INPUT);
-   pinMode(in6, INPUT);
-   pinMode(in7, INPUT);
-   pinMode(in8, INPUT);
+   pinMode(in1, INPUT); //-
+   pinMode(in2, INPUT);//Szabad tolatás
+   pinMode(in3, INPUT);//-
+   pinMode(in4, INPUT);//Megállj
+   pinMode(in5, INPUT);//-
+   pinMode(in6, INPUT);//Nem biztosított fény bejárati jelző
+   pinMode(in7, INPUT);//Megállj
+   pinMode(in8, INPUT);//-
    pinMode(in9, INPUT);
    pinMode(in10, INPUT);
    pinMode(in11, INPUT);
@@ -85,60 +85,54 @@ void setup() {
 
 void tolatasjelzo() {
 
-  if ((digitalRead(in1) == HIGH) && (value1last == 0)) {
-    digitalWrite(out1, HIGH); //Kek fel
-    digitalWrite(out2, LOW); //Feher le
-    value1last = 1;
-  }
-
-  if ((digitalRead(in2) == HIGH ) && (value1last == 1)) {
+  if (digitalRead(in2) == HIGH ) {
       digitalWrite(out1, LOW); //Kek le
       digitalWrite(out2, HIGH); //Feher fel
       value1last = 0;
+    } else {
+      digitalWrite(out1, HIGH); //Kek fel
+      digitalWrite(out2, LOW); //Feher le
     }
 
 }
 
 void nbtej(/*Nem biztositott terkoz elojelzo*/) {
-  if ((digitalRead(in3) == HIGH) && (value2last == 0)) {
-    digitalWrite(out3, HIGH); //Zold fel
-    digitalWrite(out4, LOW); //Sarga le
-    value2last = 1;
-  }
 
-  if ((digitalRead(in4) == HIGH ) && (value2last == 1)) {
+
+  if (digitalRead(in4) == HIGH ) {
       digitalWrite(out3, LOW); //Zold le
       digitalWrite(out4, HIGH); //Sarga fel
       value2last = 0;
+    } else {
+      digitalWrite(out3, HIGH); //Zold fel
+      digitalWrite(out4, LOW); //Sarga le
     }
 }
 
 void nbfbj(/*Nem biztosított fény bejárati jelző*/){
-  if ((digitalRead(in5) == HIGH) && (value3last == 0)) {
-    digitalWrite(out5, HIGH); //Piros fel
-    digitalWrite(out6, LOW); //Sarga le
-    value3last = 1;
-  }
 
-  if ((digitalRead(in6) == HIGH ) && (value3last == 1)) {
+
+  if (digitalRead(in6) == HIGH ) {
       digitalWrite(out5, LOW); //Piros le
       digitalWrite(out6, HIGH); //Sarga fel
-      value3last = 0;
+
+    } else {
+      digitalWrite(out5, HIGH); //Piros fel
+      digitalWrite(out6, LOW); //Sarga le
     }
 }
 
 void ismetlojelzo(){
-  if ((digitalRead(in7) == HIGH) && (value4last == 0)) {
+  if (digitalRead(in7) == HIGH)  {
     digitalWrite(out7, HIGH); //Sarga fel
     digitalWrite(out8, LOW); //Zold le
-    value4last = 1;
+
+  } else {
+    digitalWrite(out7, LOW); //Sarga le
+    digitalWrite(out8, HIGH); //Zold fel
   }
 
-  if ((digitalRead(in8) == HIGH ) && (value4last == 1)) {
-      digitalWrite(out7, LOW); //Sarga le
-      digitalWrite(out8, HIGH); //Zold fel
-      value4last = 0;
-    }
+
 }
 
 void atj(/*Automata terkozjelzo*/){
@@ -197,19 +191,54 @@ void atj(/*Automata terkozjelzo*/){
 
 }
 
+void guritojelzo(/*Automata terkozjelzo*/){
+  if (digitalRead(in12) == HIGH ) { //Gurits
+      digitalWrite(out12, LOW); //kek le
+      digitalWrite(out13, HIGH); //feher fel
+} else if (digitalRead(in13) == HIGH ) { //Gyorsits
+ switch (tick) {
+   case 1:
+   digitalWrite(out13, HIGH);
+   break;
+   case 0:
+   digitalWrite(out13, LOW);
+   break;
+ }
+} else if (digitalRead(in14) == HIGH ) { //Lassits
+  switch (tick) {
+    case 1:
+    digitalWrite(out12, HIGH);
+    break;
+    case 0:
+    digitalWrite(out12, LOW);
+    break;
+}
+} else if (digitalRead(in15) == HIGH ) { //vissza
+  digitalWrite(out12, HIGH);
+  digitalWrite(out13, HIGH);
+} else {
+  digitalWrite(out12, HIGH);
+  digitalWrite(out13, LOW);
+}
+
+}
+
+
 void loop() {
   tolatasjelzo();
   nbtej(/*Nem biztositott terkoz elojelzo*/);
   nbfbj(/*Nem biztosított fény bejárati jelző*/);
   ismetlojelzo();
   atj(/*Automata terkozjelzo*/);
+guritojelzo();
 
-
-/*//Timer
-if (((millis()-timer1)>=2000) && ((millis()-timer1)<=2100)) {
+//Timer
+if (((millis()-timer1)>=1000) && ((millis()-timer1)<=1100)) {
   tick=1;
-}else {
+}
+if (((millis()-timer1)>=2000) && ((millis()-timer1)<=2100)) {
   tick=0;
-}*/
+  timer1 = timer1+millis();
+}
 
 }
