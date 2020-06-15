@@ -12,6 +12,7 @@ unsigned long nembiztterkoz = 0;
 unsigned long nembiztfeny = 0;
 unsigned long ismjel = 0;
 unsigned long gurito = 0;
+unsigned long otf = 0;
 
 //valuelast
 int value1last = 0;
@@ -33,9 +34,15 @@ int out8 = 7;  //Ismetlojelzo Zold
 int out9 = 8;
 int out10 = 9;
 int out11 = 10;
-int out12 = 11;
-int out13 = 12; //Guritojelzo kek
-int out14 = 13; //Guritojelzo feher
+int out12 = 11;//Guritojelzo kek
+int out13 = 12; //Guritojelzo Feher
+int out14 = 13;//Ötfényű fehér
+int out15 = 14;//Ötfényű zöld
+int out16 = 15;//Ötfényű vörös
+int out17 = 16;//Ötfényű felső sárga
+int out18 = 17;//Ötfényű alsó sárga
+int out19 = 18;
+int out20 = 19;
 
 //In
 int in1 = A0; //Tolatasjelzo Kek
@@ -53,6 +60,21 @@ int in12 = A11;
 int in13 = A11;
 int in14 = A11;
 int in15 = A11;
+int in16 = A11; //Zöld
+int in17 = A11;
+int in18 = A11;
+int in19 = A11;
+int in20 = A11;
+int in21 = A11;
+int in22 = A11;
+int in23 = A11;
+int in24 = A11;
+int in25 = A11;
+int in26 = A11;
+int in27 = A11;
+int in28 = A11;
+int in29 = A11;
+int in30 = A11;
 
 
 void setup() {
@@ -240,6 +262,154 @@ if ((millis()-gurito)>5000){
 }
 }
 
+ void outfenyu(/* 5 fényű */) {
+   if ((millis()-otf)>5000){
+     if (digitalRead(in16) == HIGH)  {//zold
+       digitalWrite(out14, LOW); //Fehér le
+       digitalWrite(out15, HIGH);  //Zöld fel
+       digitalWrite(out16, LOW); //Vörös le
+       digitalWrite(out17, LOW); //Felső sárga le
+       digitalWrite(out18, LOW); //Alsó sárga le
+   otf = millis();
+
+ } else if (digitalRead(in17) == HIGH)  {//zold lassan villog
+       digitalWrite(out14, LOW); //Fehér le
+       digitalWrite(out16, LOW); //Vörös le
+       digitalWrite(out17, LOW); //Felső sárga le
+       digitalWrite(out18, LOW); //Alsó sárga le
+       switch (tick) {
+         case 1:
+         digitalWrite(out15, HIGH);  //Zöld fel
+         break;
+         case 0:
+         digitalWrite(out15, LOW);  //Zöld le
+         break;
+       }
+       otf = millis();
+
+   } else if (digitalRead(in18) == HIGH)  {//zold gyorsan villog
+     digitalWrite(out14, LOW); //Fehér le
+     digitalWrite(out16, LOW); //Vörös le
+     digitalWrite(out17, LOW); //Felső sárga le
+     digitalWrite(out18, LOW); //Alsó sárga le
+     switch (stick) {
+       case 1:
+       digitalWrite(out15, HIGH);  //Zöld fel
+       break;
+       case 0:
+       digitalWrite(out15, LOW);  //Zöld le
+       break;
+     }
+     otf = millis();
+
+ } else if (digitalRead(in19) == HIGH)  {//felso sarga
+   digitalWrite(out14, LOW); //Fehér le
+   digitalWrite(out15, LOW);  //Zöld le
+   digitalWrite(out16, LOW); //Vörös le
+   digitalWrite(out17, HIGH); //Felső sárga fel
+   digitalWrite(out18, LOW); //Alsó sárga le
+   otf = millis();
+ } else if (digitalRead(in20) == HIGH)  {//felso sarga lassan villog
+   digitalWrite(out14, LOW); //Fehér le
+   digitalWrite(out16, LOW); //Vörös le
+   digitalWrite(out15, LOW); //zold
+   digitalWrite(out18, LOW); //Alsó sárga le
+   switch (tick) {
+     case 1:
+     digitalWrite(out17, HIGH);  //felso sarga fel
+     break;
+     case 0:
+     digitalWrite(out17, LOW);  //Zöld le
+     break;
+   }
+   otf = millis();
+} else if (digitalRead(in21) == HIGH)  {//alsó sárga és zöld világít
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out15, HIGH);  //Zöld fel
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out17, LOW); //Felső sárga le
+  digitalWrite(out18, HIGH); //Alsó sárga fel
+  otf = millis();
+
+} else if (digitalRead(in22) == HIGH)  {//alsó sárga világít és zöld lassan villog
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out17, LOW); //felso sárga le
+  digitalWrite(out18, HIGH); //Alsó sárga fel
+  switch (tick) {
+    case 1:
+    digitalWrite(out15, HIGH);  //Zöld fel
+    break;
+    case 0:
+    digitalWrite(out15, LOW);  //Zöld le
+    break;
+  }
+  otf = millis();
+} else if (digitalRead(in23) == HIGH)  {//alsó sárga világít és zöld gyorsan villog
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out17, LOW); //felso sárga le
+  digitalWrite(out18, HIGH); //Alsó sárga fel
+  switch (stick) {
+    case 1:
+    digitalWrite(out15, HIGH);  //Zöld fel
+    break;
+    case 0:
+    digitalWrite(out15, LOW);  //Zöld le
+    break;
+  }
+  otf = millis();
+} else if (digitalRead(in24) == HIGH)  {//alsó sárga világít, felső sárga világít
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out17, HIGH); //felso sárga fel
+  digitalWrite(out18, HIGH); //Alsó sárga fel
+  digitalWrite(out15, LOW);  //Zöld le
+  otf = millis();
+} else if (digitalRead(in25) == HIGH)  {//alsó sárga világít, felső sárga lassan villog
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out15, LOW); //zöld le
+  digitalWrite(out18, HIGH); //Alsó sárga fel
+  switch (tick) {
+    case 1:
+    digitalWrite(out17, HIGH);  //felso sárga fel
+    break;
+    case 0:
+    digitalWrite(out17, LOW);  //felso sárga le
+    break;
+  }
+  otf = millis();
+} else if (digitalRead(in26) == HIGH)  {//vörös világít, fehér lassan villog
+  digitalWrite(out17, LOW); //felso sárga le
+  digitalWrite(out16, HIGH); //Vörös fel
+  digitalWrite(out15, LOW); //zöld le
+  digitalWrite(out18, LOW); //Alsó sárga le
+  switch (tick) {
+    case 1:
+    digitalWrite(out14, HIGH);  //feher fel
+    break;
+    case 0:
+    digitalWrite(out14, LOW);  //feher le
+    break;
+  }
+  otf = millis();
+}  else if (digitalRead(in27) == HIGH)  {//fehér világít
+  digitalWrite(out14, HIGH); //Fehér fel
+  digitalWrite(out16, LOW); //Vörös le
+  digitalWrite(out17, LOW); //felso sárga le
+  digitalWrite(out18, LOW); //Alsó sárga le
+  digitalWrite(out15, LOW);  //Zöld le
+  otf = millis();
+} else {
+  digitalWrite(out14, LOW); //Fehér le
+  digitalWrite(out16, HIGH); //Vörös fel
+  digitalWrite(out17, LOW); //felso sárga le
+  digitalWrite(out18, LOW); //Alsó sárga le
+  digitalWrite(out15, LOW);  //Zöld le
+}
+}
+}
 
 void loop() {
   tolatasjelzo();
