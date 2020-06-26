@@ -13,6 +13,7 @@ unsigned long nembiztfeny = 0;
 unsigned long ismjel = 0;
 unsigned long gurito = 0;
 unsigned long otf = 0;
+unsigned long atjelzo = 0;
 
 //valuelast
 int value1last = 0;
@@ -31,9 +32,9 @@ int out5 = 4;  //Nem biztosított fény bejárati jelzők Piros
 int out6 = 5;  //Nem biztosított fény bejárati jelzők Sarga
 int out7 = 6;  //Ismetlojelzo sarga
 int out8 = 7;  //Ismetlojelzo Zold
-int out9 = 8;
-int out10 = 9;
-int out11 = 10;
+int out9 = 8; //Térköz vörös
+int out10 = 9; //Térköz sárga
+int out11 = 10; //Térköz zöld
 int out12 = 11;//Guritojelzo kek
 int out13 = 12; //Guritojelzo Feher
 int out14 = 13;//Ötfényű fehér
@@ -170,59 +171,54 @@ ismjel = millis();
 }
 
 void atj(/*Automata terkozjelzo*/){
-  if (digitalRead(in9) == HIGH)  {
-    digitalWrite(out9, HIGH); //Sarga fel
-    digitalWrite(out10, LOW); //Zold le
-    digitalWrite(out11, LOW); //Zold le
-    value4last = 1;
-  }
-  if (digitalRead(in10) == HIGH ) {
-    digitalWrite(out9, LOW); //Sarga le
-    digitalWrite(out10, HIGH); //Zold fel
-    digitalWrite(out11, LOW); //Zold le
-      value4last = 2;
+  //https://adoc.tips/magyar-a-mav-es-gysev-vonalain-hasznalt-fenyjelz-berendezese.html
+  if ((millis()-atjelzo)>5000) {
+    if (digitalRead(in9) == HIGH ) { //sarga feny
+        digitalWrite(out9, LOW); //Vörös le
+        digitalWrite(out10, HIGH); //sárga fel
+        digitalWrite(out11, LOW); //zöld le
+        atjelzo = millis();
+    } else if (digitalRead(in13) == HIGH ) { //sarga villog
+    switch (tick) {
+     case 1:
+     digitalWrite(out9, LOW); //Vörös le
+     digitalWrite(out10, HIGH); //sárga fel
+     digitalWrite(out11, LOW); //zöld le
+     break;
+     case 0:
+     digitalWrite(out9, LOW); //Vörös le
+     digitalWrite(out10, LOW); //sárga le
+     digitalWrite(out11, LOW); //zöld le
+     break;
+     atjelzo = millis();
     }
-  if (digitalRead(in11) == HIGH ) {
-    digitalWrite(out9, LOW); //Sarga le
-    digitalWrite(out10, LOW); //Zold fel
-    digitalWrite(out11, HIGH); //Zold le
- count1++;
- Serial.println(count1);
-      value4last = 3;
-      }
-
-  if (count1>=400) {
-    Serial.println(tick);
+  } else if (digitalRead(in14) == HIGH ) { //zold villog
     switch (tick) {
       case 1:
-        digitalWrite(out11, HIGH); //Sarga fel
-
-        break;
+      digitalWrite(out9, LOW); //Vörös le
+      digitalWrite(out10, LOW); //sárga le
+      digitalWrite(out11, HIGH); //zöld le
+      break;
       case 0:
-         digitalWrite(out11, LOW); //Sarga le
-         break;
-
+      digitalWrite(out9, LOW); //Vörös le
+      digitalWrite(out10, LOW); //sárga le
+      digitalWrite(out11, LOW); //zöld le
+      break;
+      atjelzo = millis();
     }
+  } else if (digitalRead(in15) == HIGH ) { //zöld
+    digitalWrite(out9, LOW); //Vörös le
+    digitalWrite(out10, LOW); //sárga le
+    digitalWrite(out11, HIGH); //zöld le
+    atjelzo = millis();
+    } else {
+      digitalWrite(out9, HIGH); //Vörös le
+      digitalWrite(out10, LOW); //sárga le
+      digitalWrite(out11, LOW); //zöld le
+    }
+
+
   }
- /*if ((digitalRead(in11) == HIGH ) && ((value5last == 1)||(value5last == 2)||(value5last == 3))) {
-         count1++;
-         Serial.println(count1);
-         if (count1 == 1000) {
-           digitalWrite(out9, LOW); //Sarga le
-           digitalWrite(out10, LOW); //Zold fel
-           value4last = 0;
-
-           if (tick==1) {
-             digitalWrite(out11, HIGH);
-           }else {
-             digitalWrite(out11, LOW);
-           }
-         }
-
-
-       }*/
-
-
 }
 
 void guritojelzo(/*Automata terkozjelzo*/){
@@ -418,7 +414,7 @@ void loop() {
   ismetlojelzo();
   atj(/*Automata terkozjelzo*/);
 guritojelzo();
-
+outfenyu();
 //Timer
 //long
 if (((millis()-timer1)>=500) && ((millis()-timer1)<=600)) {
